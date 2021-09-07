@@ -2,10 +2,10 @@
 
 This project is a typescript library for electron that allows you to configure a fully customizable title bar.
 
-## IMPORTANT
-**This project has been archived and is now read-only. I thank all the people who supported the project with issues, pull request, ideas, etc. <br/>Because I do not have the time to continue with the development of it I have decided to close this project, but, you can always rely on the code to develop something better 😉**
+##  ⚠️🚨 **[ NOTE ]** 🛑🚧
+The project was ~~abandoned~~ _archived_ by its original author. Just prior to being archived, [#154](https://github.com/AlexTorresSk/custom-electron-titlebar/pull/154) had been merged which makes use of [`@electron/remote`](https://github.com/electron/remote) instead of the deprecated `electron.remote` that was removed in electron v14. To be frank, I just wanted support for v14. That's why I forked and will be publishing to npm under the `@rozzzly` scope. I don't really have any intention of adding new features. If some bug is affecting me, I'll patch and release. But can't promise that I'll have much time to fixing any _reported_ bugs. **If anyone PR's a bugfix or new feature, I'll try to merge them and publish promptly.** Otherwise, 🤷‍♂️ _"when I get around to it."_
 
-### **It is a library for electron, it cannot be used on a basic website.**
+## It is a library for **electron**, it **cannot** be used on a **normal website**.
 
 [![LICENSE](https://img.shields.io/github/license/AlexTorresSk/custom-electron-titlebar.svg)](https://github.com/AlexTorresSk/custom-electron-titlebar/blob/master/LICENSE)
 [![NPM Version](https://img.shields.io/npm/v/custom-electron-titlebar.svg)](https://npmjs.org/package/custom-electron-titlebar)
@@ -19,25 +19,19 @@ This project is a typescript library for electron that allows you to configure a
 ## Install
 
 ```
-npm i custom-electron-titlebar
+yarn add @rozzzly/custom-electron-titlebar
 ```
-
-or use example folder to init basic electron project with this titlebar.
+or if you prefer the more vanilla npm:
+```
+npm i @rozzzly/custom-electron-titlebar
+```
 
 ## Usage
 
 #### Step 1
-In your **renderer** file or in an **HTML script tag** add:
+In your app's **renderer** entrypoint or in an **HTML script tag** add:
 
-```js
-const customTitlebar = require('custom-electron-titlebar');
 
-new customTitlebar.Titlebar({
-	backgroundColor: customTitlebar.Color.fromHex('#444')
-});
-```
-
-> if you are using _typescript_
 ```ts
 import { Titlebar, Color } from 'custom-electron-titlebar'
 
@@ -49,23 +43,82 @@ new Titlebar({
 The parameter `backgroundColor: Color` is required, this should be `Color` type.
 (View [Update Background](#update-background) for more details).
 
+
 #### Step 2
-Update the code that launches browser window
-```js
-var mainWindow = new BrowserWindow({
-      width: 1000,
-      height: 600,
-      titleBarStyle: "hidden", // add this line
+
+Import `initialize` from `@electron/remote/main` then call it _(ie: `initialize()`)_ somewhere near the top of your app's **main** entrypoint/
+
+```ts
+/* ...other imports... */
+import { initialize } from '@electron/remote/main';
+/* ...other imports... */
+
+initialize(); // invoke @electron/remote/main.initialize
+
+// the rest of your app's main entrypoint
+app.on('ready', () => {
+	// ...
 });
 ```
 
+
+
+#### Step 3
+Update the code that launches browser window
+```ts
+mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 600,
+    titleBarStyle: 'hidden', // add this line
+});
+```
+
+## ⚠️🚨 **[ Warning ]** 🛑🚧
+Until [#72](https://github.com/electron/remote/pull/72) gets merged in `@electron/remote`and published, you'll still need to specify
+`webPreferences: { enableRemoteModule: true }` when creating a new `BrowserWindow`. **In `electron` v14 that option has been "removed" from the docs and typescript definitions but adding the `enableRemoteModule` still works.**
+
+If you're a typescript user, try the following little hack:
+```ts
+mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 600,
+    titleBarStyle: 'hidden',
+	webPreferences: {
+		['enableRemoteModule' as any]: true
+	}
+});
+```
+
+After that gets merged and published, it _**looks like**_ _(although it may change)_ the new API will be the following:
+
+```ts
+import { app, BrowserWindow } from 'electron';
+import { initialize, permit } from '@electron/remote/main';
+
+initialize();
+let mainWindow;
+
+app.on('ready', () => {
+	mainWindow = new BrowserWindow({
+		width: 1000,
+		height: 600,
+		titleBarStyle: 'hidden'
+	});
+
+ 	// permit() must be called on the webContents of each BrowserWindow that will get a custom titlebar
+	permit(mainWindow.webContents);
+})
+```
+
+
+
 ## Options
 
-The interface [`TitleBarOptions`] is managed, which has the following configurable options for the title bar. Some parameters are optional.
+The `Titlebar` constructor takes several options:
 
 | Parameter                      | Type             | Description                                                                                                                     | Default                   |
 | ------------------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| backgroundColor **(required)** | Color            | The background color of the titlebar.                                                                                           | #444444                   |
+| backgroundColor                |  Color            | The background color of the titlebar.                                                                                           | #444444                   |
 | icon                           | string           | The icon shown on the left side of the title bar.                                                                               | null                      |
 | iconsTheme                     | Theme            | Style of the icons.                                                                                                             | Themebar.win              |
 | shadow                         | boolean          | The shadow of the titlebar.                                                                                                     | false                     |

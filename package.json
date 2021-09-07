@@ -1,19 +1,31 @@
 {
-  "name": "custom-electron-titlebar",
-  "version": "3.2.7",
+  "name": "@rozzzly/custom-electron-titlebar",
+  "version": "3.3.1",
   "description": "Custom Electron Titlebar is a library for electron that allows you to configure a fully customizable title bar.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "electron example/main.js",
-    "start": "npm run build && npm run dev"
+    "start": "npm run build && npm run dev",
+    "buildAndPublish": "tsc && cp -f ./package.json ./README.md ./LICENSE ./dist && yarn publish ./dist --access public"
   },
-  "author": "Alex Torres <alextorressk@gmail.com>",
+  "contributors": [
+    {
+      "name": "Patrick Lienau",
+      "email": "pclienau@gmial.com",
+      "url": "https://github.com/rozzzly"
+    },
+    {
+      "name": "Alex Torres",
+      "email": "alextorressk@gmail.com",
+      "url": "https://github.com/AlexTorresSk"
+    }
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AlexTorresSk/custom-electron-titlebar.git"
+    "url": "https://github.com/rozzzly/custom-electron-titlebar.git"
   },
   "keywords": [
     "typescript",
@@ -24,20 +36,17 @@
     "linux"
   ],
   "bugs": {
-    "url": "https://github.com/AlexTorresSk/custom-electron-titlebar/issues"
+    "url": "https://github.com/rozzzly/custom-electron-titlebar/issues"
   },
-  "homepage": "https://github.com/AlexTorresSk/custom-electron-titlebar#readme",
-  "directories": {
-    "example": "example",
-    "build": "build"
-  },
+  "homepage": "https://github.com/rozzzly/custom-electron-titlebar#readme",
   "peerDependencies": {
-    "electron": "^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0"
+    "electron": "^10.0.0 || ^11.0.0 || ^12.0.0 || ^13.0.0 || ^14.0.0"
   },
   "dependencies": {
     "@electron/remote": "^1.1.0"
   },
   "devDependencies": {
+    "@types/node": "^16.7.12",
     "electron": "^10.4.0",
     "typescript": "^4.2.3"
   }
